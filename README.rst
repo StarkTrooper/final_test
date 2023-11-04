@@ -1,6 +1,6 @@
 .. _blinky-sample:
 
-Blinky
+Final test (Blinky template)
 ######
 
 Overview
