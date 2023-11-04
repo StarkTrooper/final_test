@@ -8,6 +8,10 @@
 #include <ble_gap.h>
 #include <sensor_driver.h> */
 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <nrf.h>
@@ -17,6 +21,8 @@
 #include "nrf_sdh.h"
 #include "nrf_sdh_ble.h"
 #include "nrf_sdh_soc.h"
+#include "bluetooth.c"
+#include "Hr_Strss_01.c"
 
 #include "sensors.h" // Include your sensor header file
 #include "stress_detection_algorithm.h" // Include your stress detection algorithm header file
@@ -95,6 +101,18 @@ int main(void) {
     // Initialize sensors
     initMAX86140(); // Initialization function for MAX86140 sensor (example)
     initMAX30001();
+    
+    int sample1[] = {158233, 157389, 156587, 156082, 155676, 155377, 155204, 155121, 155027, 155010,
+        155045, 155232, 155480, 155740, 155923, 156111, 156350, 156629, 156938, 157262,
+        157655, 158051, 158540, 158915, 158754, 158233, 157839, 157704, 157601, 157495,
+        157569, 157578, 157631, 157701, 157865, 158064, 158264, 158511, 158744, 159075,
+        159303, 159508, 159941, 160288, 160321, 159943, 159355, 158965, 158773, 158718,
+        158710, 158607, 158540, 158370, 158349, 158396, 158434, 158550, 158618, 158766,
+        158880, 159042, 159242, 159354, 159392, 159003, 158569, 158328, 158184, 158119,
+        158180, 158266, 158280, 158325, 158418, 158574, 158732, 158888, 159129, 159321,
+        159515, 159757, 160081, 160378, 160561, 160643, 160308, 159857, 159557, 159434,
+        159245, 159283, 159328, 159305, 159355, 159425, 159516, 159702, 159893, 160111,
+        160327, 160526, 160802};
 
     while (true) {
         // Acquire sensor data
@@ -102,7 +120,11 @@ int main(void) {
         readMAX30001Data();
 
         // Run stress detection algorithm
-        runStressDetectionAlgorithm(); //Function to run the stress detection algorithm (example)
+        //runStressDetectionAlgorithm(); //Function to run the stress detection algorithm (example)
+        int valhr = HR(sample1, sizeof(sample1) / sizeof(sample1[0]));
+    	//printf("%d\n", valhr);
+    	runStressDetectionAlgorithm(5, valhr);
+    	return 0;
 
         // Implement power management strategies
         // ...
