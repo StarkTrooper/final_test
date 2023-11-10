@@ -27,6 +27,8 @@
 #include "sensors.h" // Include your sensor header file
 #include "stress_detection_algorithm.h" // Include your stress detection algorithm header file
 
+#include <zephyr/settings/settings.h>
+
 #define DEVICE_NAME "StressWristband" 
 #define APP_BLE_OBSERVER_PRIO 3       // BLE observer priority
 
