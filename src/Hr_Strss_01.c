@@ -13,12 +13,12 @@ int HR(int data[], int size) {
     while (1) {
         //sleep(1);
         
-        //printf("%d\n", strt);
+        printf("%d\n", strt);
         //val = real data
         //hrl[ctr] = val; # for de moment:
         hrl[ctr] = data[strt];
         strt++;
-		ctr++;
+        ctr++;
         while (strt > 5) {
             ctr++;
             //sleep(1);
@@ -29,12 +29,16 @@ int HR(int data[], int size) {
                 //printf("Ok\n");
                 peaks[1] = ctr;
                 int dpp = peaks[1] - peaks[0];
-                if (dpp > 23) {
-                    HRs[0] = 0;
-                } else if (dpp < 18) {
-                    HRs[0] = 2;
-                } else {
-                    HRs[0] = 1;
+                switch (dpp) {
+                    case 0 ... 17:
+                        HRs[0] = 1;
+                        break;
+                    case 18 ... 23:
+                        HRs[0] = 2;
+                        break;
+                    default:
+                        HRs[0] = 0;
+                        break;
                 }
                 ctr2++;
                 peaks[0]=ctr;
@@ -47,8 +51,8 @@ int HR(int data[], int size) {
             strt++;
             
             if (ctr2 > 1) {
-    		return HRs[0];
-    	  }
+                return HRs[0];
+            }
         }
     }
 }
@@ -75,39 +79,36 @@ void runStressDetectionAlgorithm(int gap, int hr) {
 
         lt[4] = val;
 
-        if (lt[4] - lt[0] > gap && ct > 4) {
-            if (hr == 1) {
-                printf("Manual activity (normal HR and hand movement)\n");
-            } else if (hr == 0) {
-                printf("Danger (constant activity but low HR)\n");
-            } else {
-                printf("Body activity (constant activity, hence high HR)\n");
-            }
-        } else if (lt[4] - lt[0] > gap) {
-            if (hr == 1) {
-                printf("Manual activity (normal HR and high A_G)\n");
-            } else if (hr == 0) {
-                printf("Manual activity (low HR and high A_G)\n");
-            } else {
-                printf("Body activity (high HR and high A_G)\n");
-            }
-        } else {
-            if (hr == 1) {
-                printf("Normal (Nothing is happening)\n");
-            } else if (hr == 0) {
+        switch (hr) {
+            case 0:
                 printf("Danger (low HR without movement)\n");
-            } else {
-                printf("Stress (High HR and normal A_G)\n");
-            }
-            ct++;
+                break;
+            case 1:
+                if (lt[4] - lt[0] > gap) {
+                    printf("Manual activity (normal HR and hand movement)\n");
+                } else {
+                    printf("Normal (Nothing is happening)\n");
+                }
+                break;
+            case 2:
+                if (lt[4] - lt[0] > gap) {
+                    printf("Manual activity (low HR and high A_G)\n");
+                } else {
+                    printf("Stress (High HR and normal A_G)\n");
+                }
+                break;
+            default:
+                printf("Body activity (constant activity, hence high HR)\n");
+                break;
         }
 
+        ct++;
         for (i = 0; i < 4; i++) {
             lt[i] = lt[i + 1];
         }
     }
 }
- /* Uncomment the following for try it
+ 
 int main() {
     int sample1[] = {158233, 157389, 156587, 156082, 155676, 155377, 155204, 155121, 155027, 155010,
         155045, 155232, 155480, 155740, 155923, 156111, 156350, 156629, 156938, 157262,
@@ -125,4 +126,5 @@ int main() {
     //printf("%d\n", valhr);
     runStressDetectionAlgorithm(5, valhr);
     return 0;
-} */
+}
+
