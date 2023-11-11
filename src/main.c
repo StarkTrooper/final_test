@@ -21,8 +21,8 @@
 #include "nrf_sdh.h"
 #include "nrf_sdh_ble.h"
 #include "nrf_sdh_soc.h"
-#include "bluetooth.c"
-#include "Hr_Strss_01.c"
+#include "bluetooth.h"
+#include "HR_Strss_01.h"
 
 #include "sensors.h" // Include your sensor header file
 #include "stress_detection_algorithm.h" // Include your stress detection algorithm header file
