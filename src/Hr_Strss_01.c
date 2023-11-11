@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h> 
 
+
 int HR(int data[], int size) {
     int peaks[2] = {0};
     int hrl[7] = {0};
