@@ -28,9 +28,9 @@ This algorithm aims to be easy and cheap to implement in order to avoid the use 
 * The Heart Rate HR() calculation involves performing a quotient, a costly operation, so its calculation was removed and only the peak-to-peak distance was used, if the distance is large the heart rate is high, and if the distance is short, the heart rate is high. At a rate of 25 samples per second, the normal peak-to-peak distance is about 20. If this is above 23, the heart rate is low and below 18, the heart rate is high. These parameters can be adjusted.
 
 * With the above, the Heart Rate is no longer stored, only one of three options is displayed:
- - 0: low heart rate
- - 1: normal heart rate
- - 2: high heart rate
+  0: low heart rate
+  1: normal heart rate
+  2: high heart rate
 
 * To connect to the stress algorithm, it receives this value from the HR() function. When obtaining this value.
 
