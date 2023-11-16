@@ -24,6 +24,12 @@
 #include "bluetooth.h"
 #include "HR_Strss_01.h"
 
+#include "MAX30210.h"
+#include "MAX30001.h"
+#include "ICP20100.h"
+#include "LSM6DSV16X.h"
+#include "MAX86140.h"
+
 #include "sensors.h" // Include your sensor header file
 #include "stress_detection_algorithm.h" // Include your stress detection algorithm header file
 
@@ -104,6 +110,7 @@ int main(void) {
     initMAX86140(); // Initialization function for MAX86140 sensor (example)
     initMAX30001();
     
+    // Define buffers
     int sample1[] = {158233, 157389, 156587, 156082, 155676, 155377, 155204, 155121, 155027, 155010,
         155045, 155232, 155480, 155740, 155923, 156111, 156350, 156629, 156938, 157262,
         157655, 158051, 158540, 158915, 158754, 158233, 157839, 157704, 157601, 157495,
@@ -115,11 +122,21 @@ int main(void) {
         159515, 159757, 160081, 160378, 160561, 160643, 160308, 159857, 159557, 159434,
         159245, 159283, 159328, 159305, 159355, 159425, 159516, 159702, 159893, 160111,
         160327, 160526, 160802};
+        
+    int MAX30210values[1];
+    int MAX86140values[2];
+    int MAX30001values[3];
+    int ICP20100values[2];
+    int LSM6DSV16Xvalues[6];
 
     while (true) {
+    	
         // Acquire sensor data
-        readMAX86140Data(); //Reading data from MAX86140 sensor's FIFO (example)
-        readMAX30001Data();
+        readMAX86140Data(MAX86140values); //Reading data from MAX86140 sensor's FIFO (example)
+        readMAX30001Data(MAX30001values);
+        readMAX30210Data(MAX30210values);
+        readICP20100Data(ICP20100values);
+        readLSM6DSV16XData(LSM6DSV16Xvalues);
 
         // Run stress detection algorithm
         //runStressDetectionAlgorithm(); //Function to run the stress detection algorithm (example)
