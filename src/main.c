@@ -29,6 +29,7 @@
 #include "ICP20100.h"
 #include "LSM6DSV16X.h"
 #include "MAX86140.h"
+#include "PWM_Motor.h"
 
 #include "sensors.h" // Include your sensor header file
 #include "stress_detection_algorithm.h" // Include your stress detection algorithm header file
@@ -137,6 +138,7 @@ int main(void) {
         readMAX30210Data(MAX30210values);
         readICP20100Data(ICP20100values);
         readLSM6DSV16XData(LSM6DSV16Xvalues);
+        Motor(); 
 
         // Run stress detection algorithm
         //runStressDetectionAlgorithm(); //Function to run the stress detection algorithm (example)
