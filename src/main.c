@@ -30,6 +30,7 @@
 #include "LSM6DSV16X.h"
 #include "MAX86140.h"
 #include "PWM_Motor.h"
+#include "LED_RGB.h"
 
 #include "sensors.h" // Include your sensor header file
 #include "stress_detection_algorithm.h" // Include your stress detection algorithm header file
@@ -139,9 +140,10 @@ int main(void) {
         readICP20100Data(ICP20100values);
         readLSM6DSV16XData(LSM6DSV16Xvalues);
         Motor(); 
+        LED3();
 
         // Run stress detection algorithm
-        //runStressDetectionAlgorithm(); //Function to run the stress detection algorithm (example)
+        // runStressDetectionAlgorithm(); //Function to run the stress detection algorithm (example)
         int valhr = HR(sample1, sizeof(sample1) / sizeof(sample1[0]));
     	//printf("%d\n", valhr);
     	runStressDetectionAlgorithm(5, valhr);
