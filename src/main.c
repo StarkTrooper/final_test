@@ -130,6 +130,7 @@ int main(void) {
     int MAX30001values[3];
     int ICP20100values[2];
     int LSM6DSV16Xvalues[6];
+    int val = 0;
 
     while (true) {
     	
@@ -139,8 +140,8 @@ int main(void) {
         readMAX30210Data(MAX30210values);
         readICP20100Data(ICP20100values);
         readLSM6DSV16XData(LSM6DSV16Xvalues);
-        Motor(); 
-        LED3();
+        Motor(val); 
+        LED3(val);
 
         // Run stress detection algorithm
         // runStressDetectionAlgorithm(); //Function to run the stress detection algorithm (example)
