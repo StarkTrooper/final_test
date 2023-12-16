@@ -1,84 +1,114 @@
-#include <zephyr/kernel.h>
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/pwm.h>
-#include <hal/nrf_gpio.h>
-
 // Configuración del PWM 
-//#define PWM_DEV_NAME DT_LABEL(DT_ALIAS(pwm0)) // P0.13
-//#define PWM_CHANNEL 0
 
-//#define PWM_DEV_NAME DT_LABEL(DT_ALIAS(pwm_led0))
-#define PWM_NODE  DT_NODELABEL(pwm_led0)
-#define PWM_CTRL  DT_PWMS_CTLR(PWM_NODE)
-#define PWM_CHAN  DT_PWMS_CHANNEL(PWM_NODE)
-#define PWM_FLAGS DT_PWMS_FLAGS(PWM_NODE)
+#include <zephyr/kernel.h>
+#include <zephyr/drivers/pwm.h>
+#include <zephyr/device.h>
 
-// PWM Period, 50 Hz for example
-#define LED_PWM_PERIOD_US (USEC_PER_SEC / 50U)
+// Velocidades del motor
+#define SPEED_STOP  0
+#define SPEED_LOW   1000
+#define SPEED_HIGH  2000
 
-const struct device *pwm_dev = DEVICE_DT_GET(PWM_CTRL);
+// Duraciones de operación del motor en milisegundos
+#define DURATION_STOP    0
+#define DURATION_SHORT   1000
+#define DURATION_LONG    2000
 
-//
-const uint8_t app_indication_pattern_glow[] = {255,100,50,225}
+// Constantes de ejemplo, ajusta según tus necesidades
+#define PWM_PERIOD_US 20000
+#define PWM_CHANNEL 0
+
+// Declaración de la estructura pwm_config
+struct pwm_config {
+    uint32_t frequency;
+    uint32_t period;
+    uint32_t pulse_width;
+    uint8_t flags;
+};
+
+// Variable global para almacenar la velocidad actual
+uint32_t current_speed = SPEED_STOP;
+uint32_t current_duration = DURATION_STOP;
+
+// Declaración de la función para evitar el error
+void pwm_change_fn(struct k_timer *dummy);
 
 // Timers
 K_TIMER_DEFINE(pwm_change_timer, pwm_change_fn, NULL);
 
-// Start repeat timer
-k_timer_start(&pwm_change_timer, K_MSEC(200), K_MSEC(200));
-
-pulse = duty * PWM_PERIOD_US / 255U;
-if (pwm_dev == NULL || !
-device_is_ready(pwm_dev))
+// Función para cambiar la velocidad y duración del motor
+void change_motor_speed_and_duration(int val)
 {
-	LOG_ERR("Error");
-}
-err = pwm_pin_set_usec(pwm_dev, PWM_CHAN, PWM_PERIOD_US, pulse, PWM_FLAGS);
-if (err)
-{
-	LOG_ERR("Pwm set fail. Err: %i",err);
-	return err;
-}    // 
-
-// Timer function
-void pwm_change_fn(struct k_timer *dummy){
-    uint32_t pulse = PWM_PERIOD_US;
-    switch (current_mode)
+    switch (val)
     {
-    case app_indication_glow:
-        pulse = app_indication_pattern_glow[pattern_index++ % sizeof(app_indication_pattern_glow)] * PWM_PERIOD_US / 255U;
-    default:
+    case 1:
+        //current_speed = SPEED_LOW;
+        current_duration = DURATION_SHORT;
         break;
-    };
-    int err = pwm_pin_set_usec(pwm_dev, PWM_CHAN, PWM_PERIOD_US, pulse, PWM_FLAGS);
-    //if (err)
+    case 2:
+        //current_speed = SPEED_HIGH;
+        current_duration = DURATION_LONG;
+        break;
+    case 0:
+        //current_speed = SPEED_STOP;
+        current_duration = DURATION_STOP;
+        break;
+    default:
+        //current_speed = SPEED_STOP;
+        current_duration = DURATION_STOP;
+        break;
+    }
 }
 
-void Motor() 
+// Función para cambiar el valor del PWM
+void pwm_change_fn(struct k_timer *dummy)
 {
-    const struct device *pwm_dev;
-
-    pwm_dev = device_get_binding(PWM_NODE);
-    if (!pwm_dev) {
-        return;
+    int val = 0;
+    int err = pwm_pin_set_usec(pwm_dev, PWM_CHANNEL, PWM_PERIOD_US, current_speed, PWM_FLAGS);
+    if (err < 0) {
+        printk("Error al cambiar el valor del PWM. Código de error: %i\n", err);
     }
 
+    // Cambiar la velocidad y duración del motor en cada intervalo de temporizador
+    change_motor_speed_and_duration(val);
+}
+
+// Función para configurar y aplicar la configuración inicial del PWM
+void setup_pwm(const struct device *pwm_dev)
+{
     struct pwm_config pwm_cfg = {
-        .frequency = 1000, 
-        .period = USEC_PER_SEC / 1000,
-        .pulse_width = 0, 
+        .frequency = 1000,
+        .period = PWM_PERIOD_US,
+        .pulse_width = 0,
         .flags = 0,
     };
 
     int ret = pwm_pin_set_config(pwm_dev, PWM_CHANNEL, &pwm_cfg);
     if (ret < 0) {
+        printk("Error al configurar el PWM. Código de error: %i\n", ret);
+        return;
+    }
+}
+
+void Motor(int val)
+{
+    const struct device *pwm_dev;
+
+    change_motor_speed_and_duration(val)
+
+    pwm_dev = device_get_binding(PWM_CTRL);
+    if (!pwm_dev) {
+        printk("Error al obtener el controlador PWM\n");
         return;
     }
 
+    // Configurar y aplicar la configuración inicial del PWM
+    setup_pwm(pwm_dev);
+
+    // Iniciar el temporizador de cambio de PWM
+    k_timer_start(&pwm_change_timer, K_MSEC(200), K_MSEC(200));
+
     while (1) {
-        pwm_pin_set_usec(pwm_dev, PWM_CHANNEL, 1500, 1000);
-        k_sleep(K_MSEC(1000)); 
-        pwm_pin_set_usec(pwm_dev, PWM_CHANNEL, 2000, 1000);
-        k_sleep(K_MSEC(1000));
+        k_sleep(K_MSEC(current_duration));
     }
 }
