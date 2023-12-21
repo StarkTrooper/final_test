@@ -57,10 +57,11 @@ int HR(int data[], int size) {
     }
 }
 
-void runStressDetectionAlgorithm(int gap, int hr) {
+int runStressDetectionAlgorithm(int gap, int hr) {
     int lt[5] = {0};
     int ct = 0;
     int i;
+    int fval[1] = {0};
 
     while (1) {
         sleep(1);
@@ -79,29 +80,48 @@ void runStressDetectionAlgorithm(int gap, int hr) {
 
         lt[4] = val;
 
-        switch (hr) {
-            case 0:
-                printf("Danger (low HR without movement)\n");
+        switch (hr) {case 0:
+                if (lt[4] - lt[0] > gap && ct>4) {
+                	fval[0] = 2;
+                    //printf("case 0 and constant movement \n");
+                } else if (lt[4] - lt[0] > gap) {
+                	fval[0] = 2;
+                    //printf("case 0 and sudent movement \n");
+                } else {
+                	fval[0] = 2;
+                	//printf("Case 0 No mevement");
+				} // lo anterior bien podría quitarse y únicamente dejar un valor, ya que todos
+				//   los casos en los que el ritmo cardiaco es bajo, hay peligro
                 break;
             case 1:
-                if (lt[4] - lt[0] > gap) {
-                    printf("Manual activity (normal HR and hand movement)\n");
+                if (lt[4] - lt[0] > gap && ct>4) {
+                	fval[0] = 1;
+                    //printf("case 1 and constant movement \n");
+                } else if (lt[4] - lt[0] > gap) {
+                	fval[0] = 2;
+                    //printf("case 1 and sudent movement \n");
                 } else {
-                    printf("Normal (Nothing is happening)\n");
-                }
+                	fval[0] = 2;
+                	//printf("Case 1 No mevement");
+				}
                 break;
             case 2:
-                if (lt[4] - lt[0] > gap) {
-                    printf("Manual activity (low HR and high A_G)\n");
+                if (lt[4] - lt[0] > gap && ct>4) {
+                	fval[0] = 2;
+                    //printf("case 2 and constant movement: %d \n", fval[0]);
+                } else if (lt[4] - lt[0] > gap) {
+                	fval[0] = 0;
+                    //printf("case 2 and sudent movement: %d \n", fval[0]);
                 } else {
-                    printf("Stress (High HR and normal A_G)\n");
-                }
+                	fval[0] = 0;
+                	//printf("Case 2 No movement: %d \n", fval[0]);
+				}
                 break;
             default:
-                printf("Body activity (constant activity, hence high HR)\n");
-                break;
+                printf("Error\n");
+                break; // mejorar en futuras versiones, no hace falta este default
         }
-
+		return fval[0];
         ct++;
         for (i = 0; i < 4; i++) {
             lt[i] = lt[i + 1];
