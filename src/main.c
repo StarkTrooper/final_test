@@ -140,23 +140,27 @@ int main(void) {
         readMAX30210Data(MAX30210values);
         readICP20100Data(ICP20100values);
         readLSM6DSV16XData(LSM6DSV16Xvalues);
-        Motor(val); 
-        LED3(val);
+        Motor(val); // Descomentar para pruebas
+        LED3(val);  // Descomentar para pruebas
 
         // Run stress detection algorithm
         // runStressDetectionAlgorithm(); //Function to run the stress detection algorithm (example)
         int valhr = HR(sample1, sizeof(sample1) / sizeof(sample1[0]));
     	//printf("%d\n", valhr);
-    	runStressDetectionAlgorithm(5, valhr);
+    	int val = runStressDetectionAlgorithm(5, valhr);
+    	Motor(val); 
+        LED3(val);
+    	
     	return 0;
 
         // Implement power management strategies
         // ...
-
+        
         // Send data over Bluetooth
         // ...
 
         // Sleep or other idle tasks
         // ...
+        
     }
 }
