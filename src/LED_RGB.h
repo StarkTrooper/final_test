@@ -24,7 +24,7 @@ void set_rgb_color(const struct device *dev, gpio_pin_t pin_r, gpio_pin_t pin_g,
     gpio_pin_set(dev, pin_b, b);
 }
 
-void main(int val)
+void LED3(int val)
 {
     const struct device *rgb_led = device_get_binding(DT_LABEL(RGB_LED_NODE));
     if (!rgb_led)
